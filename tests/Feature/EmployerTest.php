@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Employer;
+use Illuminate\Support\Carbon;
 use Faker\Generator as Faker;
 class EmployerTest extends TestCase
 {
@@ -21,8 +22,13 @@ class EmployerTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure(["id","name","created_at","updated_at"]);
         $response->assertJson(["name"=>$name,]);
-       
-        $this->assertDatabaseHas("employers",json_decode($response->getContent(),true));
+        $responseData=json_decode($response->getContent());
+        $this->assertDatabaseHas("employers",[
+            "id"=>(String)$responseData->id,
+            "name"=>$responseData->name,
+            "created_at"=>new Carbon($responseData->created_at),
+            "updated_at"=>new Carbon($responseData->updated_at)
+    ]);
     }
 
 }

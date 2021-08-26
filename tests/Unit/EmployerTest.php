@@ -3,9 +3,12 @@
 namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\Employer;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EmployerTest extends TestCase
 {
+    use RefreshDatabase;
       /**
      * A basic feature test example.
      *
