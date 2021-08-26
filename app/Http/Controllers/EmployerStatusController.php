@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployerStatus;
 use Illuminate\Http\Request;
+use App\Models\Employer;
+use Illuminate\Support\Carbon;
 
 class EmployerStatusController extends Controller
 {
@@ -33,11 +35,10 @@ class EmployerStatusController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($id,Request $request)
     {
         //
-        $status=EmployerStatus::create($request->all());
-        return $status;
+        
         
     }
 
@@ -70,9 +71,54 @@ class EmployerStatusController extends Controller
      * @param  \App\Models\EmployerStatus  $employerStatus
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EmployerStatus $employerStatus)
+    public function update($id,Request $request)
     {
         //
+        $employer=Employer::find($id);
+        /*
+        if($employer->status==$request->request("status")){
+            //no need to change just infom client with current status
+
+            return response()->json([
+                "status"=>$employer->status
+            ]);
+        }*/
+        $last_status=$employer->last_status;
+        /**
+         * we will change in these situation
+         * 1-employer is online and no record found (create first record)
+         * 3-employer is online and current status is offline (create new record)
+         * 2-employer is offline and current status is online (modifie offline at record)
+         * otherwise just infrom customer his status
+         */
+        $old_status=$employer->status;
+        $new_status=$request->request("status");
+        if(
+            (!$last_status&&$new_status=="online")
+            ||
+            ($new_status=="online"&&$old_status=="offline")
+            ){
+            //this case is first time online;
+            $last_status=EmployerStatus::create([
+                "employer_id"=>$id,
+                "online_at",Carbon::now()
+            ]);
+            $employer->last_status_id=$last_status->id;
+            $employer->save();
+
+
+            }elseif($old_status=="online"&&$new_status=="offline"){
+
+
+                $last_status->update([
+                    "offline_at",Carbon::now()
+                ]);
+
+            }
+            
+        return response()->json([
+            "status"=>$employer->status
+        ]);
     }
 
     /**

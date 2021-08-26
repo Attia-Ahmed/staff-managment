@@ -61,4 +61,22 @@ class EmployerStatusTest extends TestCase
         
        
     }
+
+    function test_employer_status(){
+        $employer=Employer::factory()->create();
+        $status=EmployerStatus::create([
+            "employer_id"=>$employer->id,
+            "online_at"=>$online_at=Carbon::now()->addHours(3)
+        ]);
+        $employer->update(["last_status_id"=>$status->id]);
+        $employer->save();
+        $employer=Employer::find($employer->id);
+        $this->assertTrue($employer->status == "online");
+        $status->update([
+            "offline_at"=>$offline_at=Carbon::now()->addHours(10)
+        ]);
+        $status->save();
+        $employer=Employer::find($employer->id);
+        $this->assertTrue($employer->status == "offline");
+    }
 }
