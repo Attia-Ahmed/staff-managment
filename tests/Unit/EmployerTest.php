@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EmployerTest extends TestCase
 {
-    use RefreshDatabase;
+       use RefreshDatabase;
       /**
      * A basic feature test example.
      *
@@ -25,6 +25,11 @@ class EmployerTest extends TestCase
             "created_at"=>$employer->created_at,
             "updated_at"=>$employer->updated_at,
     ]);
+
+
        
     }
+
+
+  
 }

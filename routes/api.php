@@ -5,7 +5,7 @@ use App\Http\Controllers\EmployerScheduleController;
 use App\Models\Employer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\EmployerStatusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,4 +22,5 @@ Route::group(['namespace' => 'api'], function()
     
     Route::post('employer', [EmployerController::class, 'store']);
     Route::post('employer/{id}/schedule', [EmployerScheduleController::class, 'store']);
+    Route::post('employer/{id}/status', [EmployerStatusController::class, 'update']);
 });
