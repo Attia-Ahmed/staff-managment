@@ -11,8 +11,8 @@ class EmployerSchedule extends Model
 
     protected $casts = [
         'day'=>"date:Y-m-d",
-        "shift_start"=>"date:h:m",
-        "shift_end"=>"date:h:m",
+        "shift_start"=>"date:H:m",
+        "shift_end"=>"date:H:m",
 
     ];
     protected $guarded=["id"];

@@ -71,8 +71,11 @@ class EmployerStatusController extends Controller
      * @param  \App\Models\EmployerStatus  $employerStatus
      * @return \Illuminate\Http\Response
      */
-    public function update($id,Request $request)
+    public function update($id,Request $request,$date=null)
     {
+        if(!$date){
+            $date=Carbon::now();
+        }
         //
         $employer=Employer::find($id);
         /*
@@ -83,6 +86,7 @@ class EmployerStatusController extends Controller
                 "status"=>$employer->status
             ]);
         }*/
+        
         $last_status=$employer->last_status;
         /**
          * we will change in these situation
@@ -92,7 +96,7 @@ class EmployerStatusController extends Controller
          * otherwise just infrom customer his status
          */
         $old_status=$employer->status;
-        $new_status=$request->request("status");
+        $new_status=$request->status;
         if(
             (!$last_status&&$new_status=="online")
             ||
@@ -101,7 +105,7 @@ class EmployerStatusController extends Controller
             //this case is first time online;
             $last_status=EmployerStatus::create([
                 "employer_id"=>$id,
-                "online_at",Carbon::now()
+                "online_at"=>$date
             ]);
             $employer->last_status_id=$last_status->id;
             $employer->save();
@@ -111,7 +115,7 @@ class EmployerStatusController extends Controller
 
 
                 $last_status->update([
-                    "offline_at",Carbon::now()
+                    "offline_at"=>$date
                 ]);
 
             }
