@@ -15,7 +15,7 @@ use App\Http\Controllers\EmployerAnalytics;
 
 class EmployerAnalyticsTest extends TestCase
 {
-   use RefreshDatabase;
+   // use RefreshDatabase;
     /**
      * A basic unit test example.
      *
@@ -23,7 +23,8 @@ class EmployerAnalyticsTest extends TestCase
      */
     public function test_get_employer_analytics()
     {
-        $employer=Employer::factory()->create();
+        $employer=Employer::find(1);
+        /*
         $c=new EmployerStatusController();
         $day=Carbon::create("2021-10-3 00:00:00");
         $request=new Request(["status"=>"online"]);
@@ -39,8 +40,8 @@ class EmployerAnalyticsTest extends TestCase
         EmployerSchedule::create([
             "employer_id"=>$employer->id,
             "day"=>$day->format("Y-m-d"),
-            "shift_start"=>$day->addHours(1)->format("h:m"),
-            "shift_end"=>$day->addHours(4)->format("h:m")
+            "shift_start"=>$day->addHours(1),
+            "shift_end"=>$day->addHours(4)
 
         ]);
         //one hour
@@ -48,14 +49,14 @@ class EmployerAnalyticsTest extends TestCase
         EmployerSchedule::create([
             "employer_id"=>$employer->id,
             "day"=>$day->format("Y-m-d"),
-            "shift_start"=>$day->addHours(5)->format("h:m"),
-            "shift_end"=>$day->addHours(6)->format("h:m")
+            "shift_start"=>$day->addHours(5),
+            "shift_end"=>$day->addHours(6)
 
         ]); //one hour
-
+*/
        $e=new EmployerAnalytics();
-       $day=Carbon::create("2021-10-3 00:00:00");
-        $request=new Request(["day"=>$day->toString()]);
+      // $day=Carbon::create("2021-10-3 00:00:00")->format("Y-m-d");
+        $request=new Request(["day"=>"2021-10-3"]);
        $out=$e->show($employer->id,$request);
        var_dump($out);
      

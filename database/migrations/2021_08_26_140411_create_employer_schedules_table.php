@@ -17,8 +17,8 @@ class CreateEmployerSchedulesTable extends Migration
             $table->id();
             $table->bigInteger('employer_id');
             $table->date("day");
-            $table->time("shift_start");
-            $table->time("shift_end");
+            $table->timestamp("shift_start");
+            $table->timestamp("shift_end");
             $table->timestamps();
         });
     }
