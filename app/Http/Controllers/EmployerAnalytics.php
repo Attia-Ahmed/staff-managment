@@ -20,6 +20,7 @@ class EmployerAnalytics extends Controller
     }
     private function get_online_periods($day,Employer $employer){
        $day=Carbon::create($day)->format("Y-m-d 00:00:00");
+       $day=Carbon::create($day);//fix sqlite compitablity
         $periods=EmployerStatus::where([
             "employer_id"=>$employer->id,
             
@@ -31,7 +32,6 @@ class EmployerAnalytics extends Controller
             $periods=$periods->toArray();
             $periods2=$periods2->toArray();
             $out=array_merge($periods,$periods2);
-            
             return $out;
             
     }
