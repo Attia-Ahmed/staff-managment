@@ -21,7 +21,10 @@ class EmployerAnalyticsTest extends TestCase
      *
      * @return void
      */
-    public function test_get_employer_analytics()
+    public function test_is_abandon(){
+        $this->assertTrue(True);
+    }
+    public function get_employer_analytics()
     {
         $employer=Employer::create(["name"=>"ahmed"]);
         
