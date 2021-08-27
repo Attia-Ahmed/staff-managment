@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 class EmployerScheduleTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
     /**
      * A basic unit test example.
      *
@@ -24,8 +24,8 @@ class EmployerScheduleTest extends TestCase
         $shift=EmployerSchedule::create([
             "employer_id"=>$employer->id,
             "day"=>$day=Carbon::now()->format("Y-m-d"),
-            "shift_start"=>$shift_start=Carbon::now()->addHours(1)->format("h:m"),
-            "shift_end"=>$shift_end=Carbon::now()->addHours(3)->format("h:m")
+            "shift_start"=>$shift_start=Carbon::now()->addHours(1),
+            "shift_end"=>$shift_end=Carbon::now()->addHours(3)
         ]);
        $this->assertDatabaseHas("employer_schedules",[
         "id"=>$shift->id,

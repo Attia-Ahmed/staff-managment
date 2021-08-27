@@ -15,7 +15,7 @@ use App\Http\Controllers\EmployerAnalytics;
 
 class EmployerAnalyticsTest extends TestCase
 {
-   // use RefreshDatabase;
+   use RefreshDatabase;
     /**
      * A basic unit test example.
      *
@@ -23,42 +23,52 @@ class EmployerAnalyticsTest extends TestCase
      */
     public function test_get_employer_analytics()
     {
-        $employer=Employer::find(1);
-        /*
+        $employer=Employer::create(["name"=>"ahmed"]);
+        
         $c=new EmployerStatusController();
         $day=Carbon::create("2021-10-3 00:00:00");
         $request=new Request(["status"=>"online"]);
+        $day=Carbon::create("2021-10-3 00:00:00");
         $date=$day->addHours(2);
+        
         $c->update($employer->id,$request,$date);
         $request=new Request(["status"=>"offline"]);
+        $day=Carbon::create("2021-10-3 00:00:00");
         $date=$day->addHours(3);
         $c->update($employer->id,$request,$date);
         $request=new Request(["status"=>"online"]);
+        $day=Carbon::create("2021-10-3 00:00:00");
         $date=$day->addHours(5);
         $c->update($employer->id,$request,$date);
-
+        $day=Carbon::create("2021-10-3 00:00:00");
+        $date1=$day->addHours(1);
+        $day=Carbon::create("2021-10-3 00:00:00");
+        $date2=$day->addHours(2);
         EmployerSchedule::create([
             "employer_id"=>$employer->id,
             "day"=>$day->format("Y-m-d"),
-            "shift_start"=>$day->addHours(1),
-            "shift_end"=>$day->addHours(4)
+            "shift_start"=>$date1,
+            "shift_end"=>$date2
 
         ]);
         //one hour
-
+        
+        $day=Carbon::create("2021-10-3 00:00:00");
+        $date1=$day->addHours(5);
+        $day=Carbon::create("2021-10-3 00:00:00");
+        $date2=$day->addHours(6);
         EmployerSchedule::create([
             "employer_id"=>$employer->id,
             "day"=>$day->format("Y-m-d"),
-            "shift_start"=>$day->addHours(5),
-            "shift_end"=>$day->addHours(6)
+            "shift_start"=>$date1,
+            "shift_end"=>$date2
 
-        ]); //one hour
-*/
+        ]);
+
        $e=new EmployerAnalytics();
       // $day=Carbon::create("2021-10-3 00:00:00")->format("Y-m-d");
         $request=new Request(["day"=>"2021-10-3"]);
        $out=$e->show($employer->id,$request);
-       var_dump($out);
      
         
     }

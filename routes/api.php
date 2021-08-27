@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployerAnalytics;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmployerScheduleController;
 use App\Models\Employer;
@@ -23,4 +24,5 @@ Route::group(['namespace' => 'api'], function()
     Route::post('employer', [EmployerController::class, 'store']);
     Route::post('employer/{id}/schedule', [EmployerScheduleController::class, 'store']);
     Route::post('employer/{id}/status', [EmployerStatusController::class, 'update']);
+    Route::get('employer/{id}/analytics', [EmployerAnalytics::class, 'show']);
 });

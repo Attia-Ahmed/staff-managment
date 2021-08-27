@@ -6,6 +6,7 @@ use App\Models\EmployerStatus;
 use Illuminate\Http\Request;
 use App\Models\Employer;
 use Illuminate\Support\Carbon;
+use Symfony\Component\VarDumper\VarDumper;
 
 class EmployerStatusController extends Controller
 {
@@ -71,13 +72,17 @@ class EmployerStatusController extends Controller
      * @param  \App\Models\EmployerStatus  $employerStatus
      * @return \Illuminate\Http\Response
      */
-    public function update($id,Request $request,$date=null)
+    public function update($id,Request $request)
     {
-        if(!$date){
+        
+        if(!$request->date||config('app.env')!="testing"){
             $date=Carbon::now();
+        }else{
+            $date=$request->date;
         }
         //
         $employer=Employer::find($id);
+        
         /*
         if($employer->status==$request->request("status")){
             //no need to change just infom client with current status
@@ -87,7 +92,7 @@ class EmployerStatusController extends Controller
             ]);
         }*/
         
-        $last_status=$employer->last_status;
+        $last_status=$employer->last_status();
         /**
          * we will change in these situation
          * 1-employer is online and no record found (create first record)
@@ -97,9 +102,8 @@ class EmployerStatusController extends Controller
          */
         $old_status=$employer->status;
         $new_status=$request->status;
+       
         if(
-            (!$last_status&&$new_status=="online")
-            ||
             ($new_status=="online"&&$old_status=="offline")
             ){
             //this case is first time online;
