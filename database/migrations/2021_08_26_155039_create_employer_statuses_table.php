@@ -16,8 +16,8 @@ class CreateEmployerStatusesTable extends Migration
         Schema::create('employer_statuses', function (Blueprint $table) {
             $table->id();
             $table->bigInteger("employer_id")->references('id')->on("employers");
-            $table->date("online_at");
-            $table->date("offline_at")->nullable();
+            $table->timestamp("online_at");
+            $table->timestamp("offline_at")->nullable();
             $table->timestamps();
         });
     }

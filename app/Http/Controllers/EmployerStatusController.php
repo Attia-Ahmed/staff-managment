@@ -6,6 +6,7 @@ use App\Models\EmployerStatus;
 use Illuminate\Http\Request;
 use App\Models\Employer;
 use Illuminate\Support\Carbon;
+use Symfony\Component\VarDumper\VarDumper;
 
 class EmployerStatusController extends Controller
 {
@@ -73,8 +74,15 @@ class EmployerStatusController extends Controller
      */
     public function update($id,Request $request)
     {
+        
+        if(!$request->date||config('app.env')!="testing"){
+            $date=Carbon::now();
+        }else{
+            $date=$request->date;
+        }
         //
         $employer=Employer::find($id);
+        
         /*
         if($employer->status==$request->request("status")){
             //no need to change just infom client with current status
@@ -83,7 +91,8 @@ class EmployerStatusController extends Controller
                 "status"=>$employer->status
             ]);
         }*/
-        $last_status=$employer->last_status;
+        
+        $last_status=$employer->last_status();
         /**
          * we will change in these situation
          * 1-employer is online and no record found (create first record)
@@ -92,16 +101,15 @@ class EmployerStatusController extends Controller
          * otherwise just infrom customer his status
          */
         $old_status=$employer->status;
-        $new_status=$request->request("status");
+        $new_status=$request->status;
+       
         if(
-            (!$last_status&&$new_status=="online")
-            ||
             ($new_status=="online"&&$old_status=="offline")
             ){
             //this case is first time online;
             $last_status=EmployerStatus::create([
                 "employer_id"=>$id,
-                "online_at",Carbon::now()
+                "online_at"=>$date
             ]);
             $employer->last_status_id=$last_status->id;
             $employer->save();
@@ -111,7 +119,7 @@ class EmployerStatusController extends Controller
 
 
                 $last_status->update([
-                    "offline_at",Carbon::now()
+                    "offline_at"=>$date
                 ]);
 
             }

@@ -16,8 +16,9 @@ class Employer extends Model
    protected $hidden=['last_status_id'];
 
    public function getLastSeenAttribute(){
-    if($this->last_status){
-        $last_status=$this->last_status;
+    $last_status=$this->last_status();
+    if($last_status){
+        
         $offline_at=$last_status->offline_at;
         
         if($offline_at){
@@ -31,10 +32,11 @@ class Employer extends Model
    }
    
    public function getStatusAttribute(){
-    if($this->last_status){
-        $last_status=$this->last_status;
+     
+       $last_status=$this->last_status();
+    if($last_status){
         $offline_at=$last_status->offline_at;
-        if(!$offline_at){
+        if($offline_at==null){
             return "online";
         }
     
@@ -51,8 +53,11 @@ class Employer extends Model
     }*/
     public function last_status()
     {
-     
-        return $this->hasOne(EmployerStatus::class,"employer_id","last_status_id")->latestOfMany();
+        if($this->last_status_id){
+            return EmployerStatus::find($this->last_status_id);
+        }
+        return null;
+       // return $this->hasOne(EmployerStatus::class,"employer_id","last_status_id")->latestOfMany();
 
     }
 
