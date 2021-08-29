@@ -18,5 +18,4 @@ class EmployerAnalyticsController extends Controller
     }
 
 
-
 }

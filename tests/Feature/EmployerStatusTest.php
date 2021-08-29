@@ -17,63 +17,59 @@ use App\Http\Controllers\EmployerAnalytics;
 class EmployerStatusTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic feature test example.
      *
      * @return void
      */
-    public function test_change_status_api()
+    public function test_change_employer_status()
     {
-        $employer=Employer::factory()->create();
-        $status="offline";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",0);
-        $status="offline";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",0);
-        $status="online";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",1);
-        $status="online";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",1);
-        $status="offline";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",1);
-        $status="online";
-        $response = $this->post("api/employer/{$employer->id}/status",["status"=>$status]);
-        
-        $response->assertStatus(200);
-        $response->assertJson(
-            ["status"=>$status]
-        );
-        $this->assertDatabaseCount("employer_statuses",2);
-        
+        $this->withoutExceptionHandling();
+
+        $employer = Employer::factory()->create();
+        $status = "offline";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])
+            ->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 0);
+        $status = "offline";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 0);
+        $status = "online";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])
+            ->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 1);
+        $status = "online";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])
+            ->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 1);
+        $status = "offline";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])
+            ->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 1);
+        $status = "online";
+        $this->post("api/employer/{$employer->id}/status", ["status" => $status])
+            ->assertStatus(200)
+            ->assertJson(
+                ["status" => $status]
+            );
+        $this->assertDatabaseCount("employer_statuses", 2);
+
 
     }
 }

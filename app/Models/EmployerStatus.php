@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 
-
 class EmployerStatus extends Model
 {
     use HasFactory;

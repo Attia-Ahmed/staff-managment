@@ -9,40 +9,47 @@ use App\Models\Employer;
 use App\Models\EmployerSchedule;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Carbon;
+
 class EmployerScheduleTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic feature test example.
      *
      * @return void
      */
-    
-    public function test_add_employer_schedule_route()
+
+    public function test_add_schedule_shifts()
     {
         $this->withoutExceptionHandling();
-        $employer=Employer::factory()->create();
-        $response=$this->post("api/employer/{$employer->id}/schedule",[
-            "employer_id"=>$employer->id,
-            "day"=>$day=Carbon::now()->format("Y-m-d"),
-            "shift_start"=>$shift_start=Carbon::now()->addHours(1)->format("Y-m-d H:i:s"),
-            "shift_end"=>$shift_end=Carbon::now()->addHours(3)->format("Y-m-d H:i:s")
+
+        $day = Carbon::today()
+            ->toDateString();
+        $shift_start = self::addHour($day, 1);
+        $shift_end = self::addHour($day, 3);
+        $employer = Employer::factory()->create();
+        $response = $this->post("api/employer/{$employer->id}/schedule", [
+            "employer_id" => $employer->id,
+            "day" => $day,
+            "shift_start" => $shift_start,
+            "shift_end" => $shift_end
+        ])
+            ->assertStatus(201)
+            ->assertJsonStructure(["id", "employer_id", "created_at", "updated_at"])
+            ->assertJson([
+                "employer_id" => $employer->id,
+                "day" => $day,
+                "shift_start" => $shift_start,
+                "shift_end" => $shift_end
+            ]);
+        $responseData = json_decode($response->getContent());
+        $this->assertDatabaseHas("employer_schedules", [
+            "id" => $responseData->id,
+            "employer_id" => (string)$employer->id,
+            "day" => $day,
+            "shift_start" => $shift_start,
+            "shift_end" => $shift_end
         ]);
-        $response->assertStatus(201);
-        $response->assertJsonStructure(["id","employer_id","created_at","updated_at"]);
-        $response->assertJson([
-        "employer_id"=>$employer->id,
-        "day"=>$day,
-        "shift_start"=>(String)$shift_start,
-        "shift_end"=>(String)$shift_end
-    ]);
-        $responseData=json_decode($response->getContent());
-       $this->assertDatabaseHas("employer_schedules",[
-        "id"=>$responseData->id,
-        "employer_id"=>(String)$employer->id,
-        "day"=>$day,
-        "shift_start"=>(String)$shift_start,
-        "shift_end"=>(String)$shift_end
-    ]);
     }
 }
