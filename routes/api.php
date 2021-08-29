@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\EmployerAnalytics;
+use App\Http\Controllers\EmployerAnalyticsController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmployerScheduleController;
-use App\Models\Employer;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployerStatusController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,11 +17,10 @@ use App\Http\Controllers\EmployerStatusController;
 |
 */
 
-Route::group(['namespace' => 'api'], function()
-{
-    
+Route::group(['namespace' => 'api'], function () {
+
     Route::post('employer', [EmployerController::class, 'store']);
-    Route::post('employer/{id}/schedule', [EmployerScheduleController::class, 'store']);
-    Route::post('employer/{id}/status', [EmployerStatusController::class, 'update']);
-    Route::get('employer/{id}/analytics', [EmployerAnalytics::class, 'show']);
+    Route::post('employer/{employer}/schedule', [EmployerScheduleController::class, 'store']);
+    Route::post('employer/{employer}/status', [EmployerController::class, 'changeStatus']);
+    Route::get('employer/{employer}/analytics', [EmployerAnalyticsController::class, 'show']);
 });
