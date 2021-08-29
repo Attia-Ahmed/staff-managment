@@ -25,4 +25,5 @@ class EmployerStatusFactory extends Factory
             //
         ];
     }
+
 }
