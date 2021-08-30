@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-
+use App\Models\Builders\EmployerStatusBuilder;
 
 class EmployerStatus extends Model
 {
@@ -35,9 +35,9 @@ class EmployerStatus extends Model
     }
 
 
-    public function employer()
+    public function newEloquentBuilder($query)
     {
-        return $this->belongsTo(Employer::class, 'employer_id', "last_status_id");
+        return new EmployerStatusBuilder($query);
     }
 
 

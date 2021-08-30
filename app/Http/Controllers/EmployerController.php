@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-
+use App\Repositories\EmployerRepository;
 
 class EmployerController extends Controller
 {
@@ -37,7 +37,8 @@ class EmployerController extends Controller
             $date = $request->date;
         }
         $new_status = $request->status;
-        $employer->updateStatus($new_status, $date);
+        $employerRepo = new EmployerRepository($employer);
+        $employerRepo->updateStatus($new_status, $date);
 
 
         return response()->json([
