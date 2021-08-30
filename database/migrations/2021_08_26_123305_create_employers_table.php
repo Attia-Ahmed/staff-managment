@@ -16,7 +16,6 @@ class CreateEmployersTable extends Migration
         Schema::create('employers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('last_status_id')->nullable();
             $table->timestamps();
         });
     }

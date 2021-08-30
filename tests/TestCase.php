@@ -11,7 +11,7 @@ abstract class TestCase extends BaseTestCase
 
     public static function addHour($day, $hour)
     {
-        return Carbon::create($day)->addHours($hour)->toISOString();
+        return Carbon::create($day)->addHours($hour)->toDateTimeString();
 
     }
 

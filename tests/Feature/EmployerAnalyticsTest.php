@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\EmployerAnalyticsController;
-use function var_dump;
+use App\Repositories\EmployerRepository;
 
 class EmployerAnalyticsTest extends TestCase
 {
@@ -26,8 +26,10 @@ class EmployerAnalyticsTest extends TestCase
     public function test_analytics_route_for_fresh_employer_must_return_zero_working_seconds()
     {
         $employer = Employer::factory()->create();
-        $day = Carbon::today()->toDateString();
-        $this->get("api/employer/{$employer->id}/analytics?day={$day}")
+        $day = carbon::today()->toDateString();
+        $start_date = $day;
+        $end_date = carbon::today()->addDay()->toDateString();
+        $this->get("api/employer/{$employer->id}/analytics?start_date={$start_date}&end_date={$end_date}")
             ->assertStatus(200)
             ->assertJson([
                 "total_working" => 0
@@ -39,17 +41,20 @@ class EmployerAnalyticsTest extends TestCase
     {
 
         $employer = Employer::factory()->create();
+        $employerRepo = new EmployerRepository($employer);
         $day = carbon::today()->toDateString();
+        $start_date = $day;
+        $end_date = carbon::today()->addDay()->toDateString();
 
         //online form 2-4
-        $employer->updateStatus("online", self::addHour($day, 2));
-        $employer->updateStatus("offline", self::addHour($day, 4));
+        $employerRepo->updateStatus("online", self::addHour($day, 2));
+        $employerRepo->updateStatus("offline", self::addHour($day, 4));
         //online form 6-8
-        $employer->updateStatus("online", self::addHour($day, 6));
-        $employer->updateStatus("offline", self::addHour($day, 8));
+        $employerRepo->updateStatus("online", self::addHour($day, 6));
+        $employerRepo->updateStatus("offline", self::addHour($day, 8));
         //online form 10-12
-        $employer->updateStatus("online", self::addHour($day, 10));
-        $employer->updateStatus("offline", self::addHour($day, 12));
+        $employerRepo->updateStatus("online", self::addHour($day, 10));
+        $employerRepo->updateStatus("offline", self::addHour($day, 12));
         //shift from 1-3 must overlap with 2-4 == 1hour
         EmployerSchedule::factory()->create([
             "employer_id" => $employer->id,
@@ -64,8 +69,7 @@ class EmployerAnalyticsTest extends TestCase
             "shift_start" => self::addHour($day, 5),
             "shift_end" => self::addHour($day, 11)
         ]);
-
-        $this->get("api/employer/{$employer->id}/analytics?day={$day}")
+        $this->get("api/employer/{$employer->id}/analytics?start_date={$start_date}&end_date={$end_date}")
             ->assertStatus(200)
             ->assertJson(["total_working" => 4 * 60 * 60]);
 
@@ -73,11 +77,15 @@ class EmployerAnalyticsTest extends TestCase
 
     function test_employer_analytics_if_employer_online()
     {
+
         $employer = Employer::factory()->create();
+        $employerRepo = new EmployerRepository($employer);
         $day = carbon::today()->toDateString();
+        $start_date = $day;
+        $end_date = carbon::today()->addDay()->toDateString();
 
         // I am online since one hour
-        $employer->updateStatus("online", Carbon::now()->subHour(1));
+        $employerRepo->updateStatus("online", Carbon::now()->subHour(1));
         //shift before 2 hours and will coninue to 2 houres in future
         EmployerSchedule::factory()->create([
             "employer_id" => $employer->id,
@@ -87,7 +95,7 @@ class EmployerAnalyticsTest extends TestCase
         ]);
 
         // so I'm working for must be 1 hour
-        $this->get("api/employer/{$employer->id}/analytics?day={$day}")
+        $this->get("api/employer/{$employer->id}/analytics?start_date={$start_date}&end_date={$end_date}")
             ->assertStatus(200)
             ->assertJson(["total_working" => 3600]);
 
@@ -98,10 +106,14 @@ class EmployerAnalyticsTest extends TestCase
     {
 
         $employer = Employer::factory()->create();
+        $employerRepo = new EmployerRepository($employer);
         $day = carbon::today()->toDateString();
 
+        $start_date = $day;
+        $end_date = carbon::today()->addDay()->toDateString();
+
         // I am online since 2 hour
-        $employer->updateStatus("online", Carbon::now()->subHour(2));
+        $employerRepo->updateStatus("online", Carbon::now()->subHour(2));
         //shift before 3 hours ended before 1 hour
         EmployerSchedule::factory()->create([
             "employer_id" => $employer->id,
@@ -112,7 +124,7 @@ class EmployerAnalyticsTest extends TestCase
 
         // so I'm working for must be 1 hour
 
-        $this->get("api/employer/{$employer->id}/analytics?day={$day}")
+        $this->get("api/employer/{$employer->id}/analytics?start_date={$start_date}&end_date={$end_date}")
             ->assertStatus(200)
             ->assertJson(["total_working" => 3600]);
 
