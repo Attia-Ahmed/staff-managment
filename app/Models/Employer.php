@@ -79,15 +79,19 @@ class Employer extends Model
         return $this;
     }
 
+    /**
+     * @return Collection
+     */
     private function getDailyOnlinePeriod($day)
     {
         $day = Carbon::create($day);
+
+        // TODO how to move these where statments as a model method (overlapped).
         return EmployerStatus::where([
             "employer_id" => $this->id,
         ])->whereDate('offline_at', '<=', $day)
             ->orWhereNull("offline_at")
-            ->whereDate('online_at', '>=', $day)->get();;
-
+            ->whereDate('online_at', '>=', $day)->get();
     }
 
     public function isOnlineBeforeShiftEnd($period_start, $shift_end)
@@ -128,11 +132,9 @@ class Employer extends Model
 
     public function getDailyOnlineSeconds($day)
     {
-        /**
-         * @var $online_periods Collection
-         */
         $online_periods = $this->getDailyOnlinePeriod($day);
 
+        // todo replace with relation
         $shifts = EmployerSchedule::where([
             "employer_id" => $this->id,
         ])->whereDate('day', '=', $day)->get();
