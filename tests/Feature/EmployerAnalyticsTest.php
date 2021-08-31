@@ -12,7 +12,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\EmployerAnalyticsController;
-use App\Repositories\EmployerRepository;
+use App\Services\Employer\EmployerAnalytics;
+use function var_dump;
 
 class EmployerAnalyticsTest extends TestCase
 {
@@ -41,7 +42,7 @@ class EmployerAnalyticsTest extends TestCase
     {
 
         $employer = Employer::factory()->create();
-        $employerRepo = new EmployerRepository($employer);
+        $employerRepo = new EmployerAnalytics($employer);
         $day = carbon::today()->toDateString();
         $start_date = $day;
         $end_date = carbon::today()->addDay()->toDateString();
@@ -79,7 +80,7 @@ class EmployerAnalyticsTest extends TestCase
     {
 
         $employer = Employer::factory()->create();
-        $employerRepo = new EmployerRepository($employer);
+        $employerRepo = new EmployerAnalytics($employer);
         $day = carbon::today()->toDateString();
         $start_date = $day;
         $end_date = carbon::today()->addDay()->toDateString();
@@ -106,7 +107,7 @@ class EmployerAnalyticsTest extends TestCase
     {
 
         $employer = Employer::factory()->create();
-        $employerRepo = new EmployerRepository($employer);
+        $employerRepo = new EmployerAnalytics($employer);
         $day = carbon::today()->toDateString();
 
         $start_date = $day;

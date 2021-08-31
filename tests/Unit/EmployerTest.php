@@ -3,7 +3,8 @@
 namespace Tests\Unit;
 
 use App\Models\EmployerSchedule;
-use App\Repositories\EmployerRepository;
+use App\Repositories\AnalyticsService;
+use App\Services\Employer\EmployerAnalytics;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 use App\Models\Employer;
@@ -41,7 +42,7 @@ class EmployerTest extends TestCase
          * @var $employer Employer
          */
         $employer = Employer::factory()->create();
-        $employerRepo = new EmployerRepository($employer);
+        $employerRepo = new EmployerAnalytics($employer);
         $employerRepo->updateStatus("offline", carbon::now()->subHours(9));
         $employerRepo->updateStatus("online", carbon::now()->subHours(8));
         $employerRepo->updateStatus("offline", carbon::now()->subHours(7));

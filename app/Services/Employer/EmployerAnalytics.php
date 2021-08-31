@@ -1,15 +1,18 @@
 <?php
+namespace App\Services\Employer;
 
-namespace App\Repositories;
-
+use App\Models\Employer;
 use App\Models\EmployerSchedule;
 use App\Models\EmployerStatus;
 use Carbon\Carbon;
-use App\Models\Employer;
 
 
-class EmployerRepository
+class EmployerAnalytics
 {
+    /**
+     * @var $employer Employer
+     */
+
     protected $employer;
 
     public function __construct(Employer $employer)
@@ -22,6 +25,7 @@ class EmployerRepository
 
     public function updateStatus($new_status, $date)
     {
+
         /**
          * we will change in these situation
          * 1-employer is online and no record found (create first record)
@@ -50,9 +54,53 @@ class EmployerRepository
 
         }
 
-        return $this->employer;
+        return $this->employer->status;
     }
+    /**
+     * @return int
+     */
 
+    public function getDailyOnlineSeconds(Carbon $start_date, Carbon $end_date)
+    {
+//        var_dump($this->employer->id);
+//        die();
+
+        $online_periods = $this->employer->statuses()->whereOverlap($start_date, $end_date)->get();
+
+        // todo replace with relation --Done
+        $shifts = $this->employer->schedules()->whereOverlap($start_date, $end_date)->get();
+
+        return $shifts->reduce(function ($total, $shift) use ($online_periods, $start_date, $end_date) {
+            $shift = $shift->limitShiftToCustomPeriod($start_date, $end_date);
+            $total += $online_periods->filter(function ($period) use ($shift) {
+                /**
+                 * @var $period EmployerStatus
+                 * @var $shift EmployerSchedule
+                 */
+                return $this->isOnlineBeforeShiftEnd($period->getPeriodStart(), $shift->shift_end);
+
+            })->filter(function ($period) use ($shift) {
+                /**
+                 * @var $period EmployerStatus
+                 * @var $shift EmployerSchedule
+                 */
+                return $this->isOfflineAfterShiftStart($period->getPeriodEnd(), $shift->shift_start);
+
+            })->reduce(function ($shift_online, $period) use ($shift) {
+                /**
+                 * @var $period EmployerStatus
+                 * @var $shift EmployerSchedule
+                 */
+                $shift_online += $this->calcPeriodShiftOverlap($period->getPeriodStart(), $period->getPeriodEnd(), $shift->shift_start, $shift->shift_end);
+
+                return $shift_online;
+            });
+
+            return $total;
+        });
+
+
+    }
 
     public function isOnlineBeforeShiftEnd($period_start, $shift_end)
     {
@@ -88,43 +136,6 @@ class EmployerRepository
             $period_end = $shift_end;
         }
         return Carbon::create($period_start)->diffInSeconds(Carbon::create($period_end));
-    }
-
-    public function getDailyOnlineSeconds(Carbon $start_date, Carbon $end_date)
-    {
-
-        $online_periods = $this->employer->statuses()->whereOverlap($start_date, $end_date)->get();
-
-        // todo replace with relation --Done
-        $shifts = $this->employer->schedules()->whereOverlap($start_date, $end_date)->get();;
-
-        return $shifts->reduce(function ($total, $shift) use ($online_periods, $start_date, $end_date) {
-            $shift = $shift->limitShiftToCustomPeriod($start_date, $end_date);
-            $total += $online_periods->filter(function ($period) use ($shift) {
-                /**
-                 * @var $period EmployerStatus
-                 * @var $shift EmployerSchedule
-                 */
-                return (
-                    ($this->isOnlineBeforeShiftEnd($period->getPeriodStart(), $shift->shift_end))
-                    &&
-                    ($this->isOfflineAfterShiftStart($period->getPeriodEnd(), $shift->shift_start))
-                );
-
-            })->reduce(function ($shift_online, $period) use ($shift) {
-                /**
-                 * @var $period EmployerStatus
-                 * @var $shift EmployerSchedule
-                 */
-                $shift_online += $this->calcPeriodShiftOverlap($period->getPeriodStart(), $period->getPeriodEnd(), $shift->shift_start, $shift->shift_end);
-
-                return $shift_online;
-            });
-
-            return $total;
-        });
-
-
     }
 
 }
