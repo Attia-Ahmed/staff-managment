@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Employer;
+use App\Services\Employer\EmployerAnalytics;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use App\Repositories\EmployerRepository;
+
 
 class EmployerController extends Controller
 {
@@ -21,28 +21,31 @@ class EmployerController extends Controller
         return Employer::create($request->all());
 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Employer $employer
-     * @return \Illuminate\Http\Response
-     */
-    public function changeStatus(Employer $employer, Request $request)
+    public function changeStatus(EmployerAnalytics $employer_analytics, Request $request)
     {
 
-        if (!$request->date || config('app.env') != "testing") {
-            $date = Carbon::now();
-        } else {
-            $date = $request->date;
-        }
+        $date = Carbon::now();
+
         $new_status = $request->status;
-        $employerRepo = new EmployerRepository($employer);
-        $employerRepo->updateStatus($new_status, $date);
+        $status = $employer_analytics->updateStatus($new_status, $date);
 
 
         return response()->json([
-            "status" => $employer->status
+            "status" => $status
+        ]);
+    }
+
+    public function employerAnalytics(EmployerAnalytics $employer_analytics, Request $request)
+    {
+
+        $start_date = Carbon::create($request->start_date);
+        $end_date = Carbon::create($request->end_date);
+        return response()->json([
+            // todo move getDailyOnlineSeconds to Job (Queue) ???
+            // todo search for the best practices feom the laravel ecosystem
+            // todo redesign the getDailyOnlineSeconds method.
+
+            "total_working" => $employer_analytics->getDailyOnlineSeconds($start_date, $end_date),
         ]);
     }
 }

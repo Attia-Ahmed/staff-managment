@@ -1,10 +1,9 @@
 <?php
 
-use App\Http\Controllers\EmployerAnalyticsController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmployerScheduleController;
+use App\Models\Employer;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployerStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,11 +15,10 @@ use App\Http\Controllers\EmployerStatusController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::group(['namespace' => 'api'], function () {
 
     Route::post('employer', [EmployerController::class, 'store']);
     Route::post('employer/{employer}/schedule', [EmployerScheduleController::class, 'store']);
-    Route::post('employer/{employer}/status', [EmployerController::class, 'changeStatus']);
-    Route::get('employer/{employer}/analytics', [EmployerAnalyticsController::class, 'show']);
+    Route::post('employer/{employer_analytics}/status', [EmployerController::class, 'changeStatus']);
+    Route::get('employer/{employer_analytics}/analytics', [EmployerController::class, 'employerAnalytics']);
 });

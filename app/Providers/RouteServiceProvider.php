@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Employer;
+use App\Services\Employer\EmployerAnalytics;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -46,6 +48,9 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+        });
+        Route::bind('employer_analytics', function ($id){
+            return new EmployerAnalytics(Employer::findOrFail($id));
         });
     }
 

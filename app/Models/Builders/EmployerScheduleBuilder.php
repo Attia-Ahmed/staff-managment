@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EmployerScheduleBuilder extends Builder
 {
+    /**
+     * @return EmployerScheduleBuilder
+     */
     public function whereOverlap(Carbon $start_date, Carbon $end_date)
     {
         $this->whereDate('shift_start', '<=', $end_date)

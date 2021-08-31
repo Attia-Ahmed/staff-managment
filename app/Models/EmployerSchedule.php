@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Builders\EmployerScheduleBuilder;
+use App\Models\Builders\EmployerStatusBuilder;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +36,9 @@ class EmployerSchedule extends Model
     {
         return $this->belongsTo(Employer::class, 'employer_id', "id");
     }
-
+    /**
+     * @return EmployerScheduleBuilder
+     */
     public function newEloquentBuilder($query)
     {
         return new EmployerScheduleBuilder($query);

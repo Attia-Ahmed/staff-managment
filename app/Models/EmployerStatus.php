@@ -34,7 +34,9 @@ class EmployerStatus extends Model
 
     }
 
-
+    /**
+     * @return EmployerStatusBuilder
+     */
     public function newEloquentBuilder($query)
     {
         return new EmployerStatusBuilder($query);
